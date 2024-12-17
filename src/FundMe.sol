@@ -73,6 +73,20 @@ contract FundMe{
       _;
     }
 
+    function cheaperWithdrawal() public onlyOwner{
+      uint256 fundersLength = s_funders.length; // now everytime we loop
+      //we shall be reading from memory instead of storage
+      for(uint256 funderIndex = 0; funderIndex < fundersLength; funderIndex++){
+
+        address funder = s_funders[funderIndex];
+        s_addressToAmountFunded[funder] = 0;
+
+      }
+
+      s_funders = new address[](0);
+
+    }
+
     function withdraw() public onlyOwner{
       //Require the withdrawal function to only be called by the owner
       //require(msg.sender == owner, "Must be owner");
@@ -112,6 +126,21 @@ contract FundMe{
     receive() external payable {
         fund();
     }
+    /**
+     * 
+     * View/Pure functions (Gettters)  
+     */
+
+    function getAddressToAmountFunded(
+      address fundingAddress
+    ) external view returns(uint256){
+      return s_addressToAmountFunded[fundingAddress];
+
+    }
+
+    function getFunder(uint256 index) external view returns(address){
+      return s_funders[index];
+    }
 
     /*function getPrice() public view  returns(uint256) {
       AggregatorV3Interface priceFeed = AggregatorV3Interface(0x694AA1769357215DE4FAC081bf1f309aDC325306);
@@ -132,4 +161,9 @@ contract FundMe{
         //AggregatorV3Interface priceFeed = AggregatorV3Interface(0x694AA1769357215DE4FAC081bf1f309aDC325306);
         return s_priceFeed.version();
     } 
+
+    function getOwner() external view returns(address){
+      return i_owner;
+
+    }
 }
